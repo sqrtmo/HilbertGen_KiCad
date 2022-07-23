@@ -17,6 +17,8 @@ class hilbert(object):
     segment_len = size / N
     whole_len = segment_len * (edges-1)
 
+    side_real_size = segment_len * (N-1) # square size will be very close to the set one self.size
+
     def __init__(self, board):
         self.board = board
         self.group = pcbnew.PCB_GROUP(self.board)
@@ -30,6 +32,17 @@ class hilbert(object):
         # Size here is specified as integer nanometers, so multiply mm by 1e6
         track.SetWidth(int(self.trace_width * 1e6))
         track.SetLayer(pcbnew.F_Cu)
+        self.board.Add(track)
+        self.group.AddItem(track)
+
+    def _draw_frame_line( self, p_start, p_end, margin ):
+        track = pcbnew.PCB_SHAPE(self.board)
+        track.SetStart( pcbnew.wxPointMM( float(p_start[0]-margin), float(p_start[1]-margin) ) )
+        track.SetEnd  ( pcbnew.wxPointMM( float(  p_end[0]-margin), float(  p_end[1]-margin) ) )
+
+        # Size here is specified as integer nanometers, so multiply mm by 1e6
+        track.SetWidth(int(0.2 * 1e6))
+        track.SetLayer(pcbnew.Dwgs_User)
         self.board.Add(track)
         self.group.AddItem(track)
 
@@ -68,12 +81,25 @@ class hilbert(object):
 
         self.segment_len = self.size / self.N
         self.whole_len = self.segment_len * (self.edges-1)
+        self.side_real_size = self.segment_len * (self.N-1)
 
 
-    def rate(self):
+    def gen(self):
         # from . import gui
-        # gui.msg("in put label", str(self.order) )
 
+        fr_margin = (self.size - self.side_real_size) / 2
+
+        # gui.msg("in put label", str(fr_margin) )
+
+        # draw frame
+        self._draw_frame_line( [0, 0]                , [0, self.size]        , fr_margin )
+        self._draw_frame_line( [0, self.size]        , [self.size, self.size], fr_margin )
+        self._draw_frame_line( [self.size, self.size], [self.size, 0]        , fr_margin )
+        self._draw_frame_line( [self.size, 0]        , [0, 0]                , fr_margin )
+        # draw cross
+        self._draw_frame_line( [self.size/2, 0]       , [self.size/2, self.size], fr_margin )
+        self._draw_frame_line( [0, self.size/2]       , [self.size, self.size/2], fr_margin )        
+        # draw pattern
         for x in range(self.edges-1):
             start = self._pattern(x)
             start[0] *= self.segment_len

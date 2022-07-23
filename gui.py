@@ -46,29 +46,54 @@ class SimpleGui(wx.Dialog):
 
         self.calc_button.Bind( wx.EVT_BUTTON, self.calculate )
         self.gen_button.Bind( wx.EVT_BUTTON, self.gener )
+        # binds
+        # self.ord_textbox.Bind( wx.EVT_TEXT, self.calculate )
+        # self.width_textbox.Bind( wx.EVT_TEXT, self.calculate )
+        # self.t_amb_textbox.Bind( wx.EVT_TEXT, self.calculate )
+        # self.square_size_textbox.Bind( wx.EVT_TEXT, self.calculate )
+        # self.track_thickness_textbox.Bind( wx.EVT_TEXT, self.calculate )
+        # self.working_voltage_textbox.Bind( wx.EVT_TEXT, self.calculate )
 
         self.result = wx.StaticText(self.panel, label = self.pattern.info(), pos=(10, 150))        
+
+    def _clamp( self, v, min, max ):
+        if v < min:
+            msg("Wrong value", "min: "+ str( min ) + ", max: " + str( max ) )
+            return min
+        elif v > max:
+            msg("Wrong value", "min: "+ str( min ) + ", max: " + str( max ) )
+            return max
+        else:
+            return v
 
     def calculate( self, event ):
         self.pattern.order              = int(self.ord_textbox.GetValue())
         self.pattern.trace_width        = float(self.width_textbox.GetValue())
-        self.pattern.trace_thickness_oz = float(self.track_thickness_textbox.GetValue())
+        self.pattern.trace_thickness_oz = int(self.track_thickness_textbox.GetValue())
         self.pattern.T_ambient          = float(self.t_amb_textbox.GetValue())
         self.pattern.size               = float(self.square_size_textbox.GetValue())
         self.pattern.voltage            = float(self.working_voltage_textbox.GetValue())
+
+        # msg("Info", self.pattern.info() )
+        self.pattern.order              = self._clamp( self.pattern.order             , 1   , 10   )
+        self.pattern.trace_width        = self._clamp( self.pattern.trace_width       , 0.01, 10   )
+        self.pattern.trace_thickness_oz = self._clamp( self.pattern.trace_thickness_oz, 1   , 3    ) 
+        self.pattern.T_ambient          = self._clamp( self.pattern.T_ambient         , 0   , 500  )
+        self.pattern.size               = self._clamp( self.pattern.size              , 1   , 1000 )
+        self.pattern.voltage            = self._clamp( self.pattern.voltage           , 0.1 , 500  )
 
         self.pattern.calculate()
 
         self.result.Destroy()
         self.result = wx.StaticText(self.panel, label = self.pattern.info(), pos=(10, 150))
 
-        # msg("Info", "sdfsdf" )
+        
 
         # self.out = False
 
     def gener( self, event ):
         # msg("Info", str(23434) )
-        self.pattern.rate()
+        self.pattern.gen()
         self.pattern.putLabel()
         self.EndModal( wx.ID_OK )
         self.OnQuit(None)
