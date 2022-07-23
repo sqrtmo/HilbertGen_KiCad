@@ -9,6 +9,7 @@ def msg( label, msg ):
     msg = wx.MessageDialog(None, msg, label, wx.OK | wx.ICON_WARNING)
     msg.ShowModal()
 
+
 class SimpleGui(wx.Dialog):
     def __init__(self, parent, board):
         wx.Dialog.__init__(self, parent, title="hilbert gen test", size = (200, 300))
@@ -56,6 +57,7 @@ class SimpleGui(wx.Dialog):
 
         self.result = wx.StaticText(self.panel, label = self.pattern.info(), pos=(10, 150))        
 
+
     def _clamp( self, v, min, max ):
         if v < min:
             msg("Wrong value", "min: "+ str( min ) + ", max: " + str( max ) )
@@ -65,6 +67,7 @@ class SimpleGui(wx.Dialog):
             return max
         else:
             return v
+
 
     def calculate( self, event ):
         self.pattern.order              = int(self.ord_textbox.GetValue())
@@ -87,9 +90,6 @@ class SimpleGui(wx.Dialog):
         self.result.Destroy()
         self.result = wx.StaticText(self.panel, label = self.pattern.info(), pos=(10, 150))
 
-        
-
-        # self.out = False
 
     def gener( self, event ):
         # msg("Info", str(23434) )
@@ -98,47 +98,3 @@ class SimpleGui(wx.Dialog):
         self.EndModal( wx.ID_OK )
         self.OnQuit(None)
         # self.Destroy()
-
-
-
-        # self.result = wx.StaticText(self.panel, label = order, id=1, pos=(50, 50))
-
-
-        # nets = board.GetNetsByName()
-        # self.netnames = []
-        # for netname, net in nets.items():
-        #     if (str(netname) == ""):
-        #         continue
-        #     self.netnames.append(str(netname))
-        # netcb = wx.ComboBox(self.panel, choices=self.netnames)
-        # netcb.SetSelection(0)
-        # netsbox = wx.BoxSizer(wx.HORIZONTAL)
-        # netsbox.Add(wx.StaticText(self.panel, label="Nets:"))
-        # netsbox.Add(netcb, proportion=1)
-        # modules = board.GetModules()
-        # self.modulenames = []
-        # for mod in modules:
-        #     self.modulenames.append("{}({})".format(mod.GetReference(), mod.GetValue()))
-        # modcb = wx.ComboBox(self.panel, choices=self.modulenames)
-        # modcb.SetSelection(0)
-        # modsbox = wx.BoxSizer(wx.HORIZONTAL)
-        # modsbox.Add(wx.StaticText(self.panel, label="Modules:"))
-        # modsbox.Add(modcb, proportion=1)
-        # box = wx.BoxSizer(wx.VERTICAL)
-        # box.Add(label,   proportion=0)
-        # box.Add(button,  proportion=0)
-        # box.Add(netsbox, proportion=0)
-        # box.Add(modsbox, proportion=0)
-        # self.panel.SetSizer(box)
-        # self.Bind(wx.EVT_BUTTON, self.OnPress, id=1)
-        # self.Bind(wx.EVT_COMBOBOX, self.OnSelectNet, id=netcb.GetId())
-        # self.Bind(wx.EVT_COMBOBOX, self.OnSelectMod, id=modcb.GetId())
-    # def OnPress(self, event):
-    #     print("in OnPress")
-    #     label = wx.StaticText(self.panel, label = "Hello World")
-    # def OnSelectNet(self, event):
-    #     item = event.GetSelection()
-    #     print("Net {} was selected".format(self.netnames[item]))
-    # def OnSelectMod(self, event):
-    #     item = event.GetSelection()
-        # print("Module {} was selected".format(self.modulenames[item]))

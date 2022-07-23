@@ -16,6 +16,7 @@ class patternGen(pcbnew.ActionPlugin):
         self.show_toolbar_button = True
         self.icon_file_name = os.path.join(os.path.dirname(__file__), 'h_ico.png')
 
+
     def Run( self ):
         board = pcbnew.GetBoard()
 

@@ -19,10 +19,12 @@ class hilbert(object):
 
     side_real_size = segment_len * (N-1) # square size will be very close to the set one self.size
 
+
     def __init__(self, board):
         self.board = board
         self.group = pcbnew.PCB_GROUP(self.board)
         self.board.Add(self.group)
+
 
     def _draw_segment( self, p_start, p_end ):
         track = pcbnew.PCB_TRACK(self.board)
@@ -35,16 +37,18 @@ class hilbert(object):
         self.board.Add(track)
         self.group.AddItem(track)
 
+
     def _draw_frame_line( self, p_start, p_end, margin ):
         track = pcbnew.PCB_SHAPE(self.board)
         track.SetStart( pcbnew.wxPointMM( float(p_start[0]-margin), float(p_start[1]-margin) ) )
         track.SetEnd  ( pcbnew.wxPointMM( float(  p_end[0]-margin), float(  p_end[1]-margin) ) )
 
         # Size here is specified as integer nanometers, so multiply mm by 1e6
-        track.SetWidth(int(0.2 * 1e6))
+        track.SetWidth(int(0.1 * 1e6))
         track.SetLayer(pcbnew.Dwgs_User)
         self.board.Add(track)
         self.group.AddItem(track)
+
 
     def _pattern( self, p ):
         pattern = [ [0, 0],
@@ -73,6 +77,7 @@ class hilbert(object):
                 ptr[1] = _len - 1 - ptr[1]
                 ptr[0]+=_len
         return ptr
+
 
     def calculate(self):
         self.trace_thickness = self.trace_thickness_oz * 0.0347
@@ -109,6 +114,7 @@ class hilbert(object):
             end[1] *= self.segment_len
             self._draw_segment( start, end ) 
 
+
     def putLabel(self):
         # from . import gui
         legend = self.info()
@@ -120,6 +126,7 @@ class hilbert(object):
         text.SetLayer(pcbnew.Cmts_User)
         # track.SetEnd  ( pcbpoint( (p_end[0]  , p_end[1]  ) ) )
         self.board.Add(text)
+
 
     def info(self):
         # https://www.omnicalculator.com/other/pcb-trace-resistance
