@@ -41,12 +41,27 @@ class SimpleGui(wx.Dialog):
         self.working_voltage_label = wx.StaticText(self.panel, label = "working voltage", pos=(10 , 110))
         self.working_voltage_textbox = wx.TextCtrl(self.panel, value = "12"             , pos=(120, 110), size = (50, 20))
 
-        # triggers
+        # drop down
+        net = self.board.GetNetsByName()
+        self.netList = []
+        for n in net.items():
+            self.netList.append(str(n[0]))
+
+        self.netList_label = wx.StaticText(self.panel, label = "net name", pos=(10 , 130))        
+        self.netsList = wx.ComboBox( self.panel, pos=(120, 130), size = (75, 25), choices=self.netList )
+        self.netsList.Bind( wx.EVT_COMBOBOX, self.OnCombo ) 
+
+
+        # buttons
         self.calc_button = wx.Button(self.panel, label="Calculate", pos=(10 , 240), size = (80, 20))
         self.gen_button  = wx.Button(self.panel, label="Generate" , pos=(100, 240), size = (80, 20))
 
         self.calc_button.Bind( wx.EVT_BUTTON, self.calculate )
         self.gen_button.Bind( wx.EVT_BUTTON, self.gener )
+
+        # todo add functionality to assign net to the pattern
+        # self.net = NETINFO_ITEM(self.board, "net_name") # https://forum.kicad.info/t/creating-a-net-in-python/2261/16
+
         # binds
         # self.ord_textbox.Bind( wx.EVT_TEXT, self.calculate )
         # self.width_textbox.Bind( wx.EVT_TEXT, self.calculate )
@@ -67,6 +82,10 @@ class SimpleGui(wx.Dialog):
             return max
         else:
             return v
+
+    def OnCombo( self, event ):
+        # msg( "comb", str( self.netList.index(self.netsList.GetValue()) ) )
+        self.pattern.netIndex           = int( self.netList.index(self.netsList.GetValue()) )   # get index of selected net
 
 
     def calculate( self, event ):
@@ -96,5 +115,5 @@ class SimpleGui(wx.Dialog):
         self.pattern.gen()
         self.pattern.putLabel()
         self.EndModal( wx.ID_OK )
-        self.OnQuit(None)
+        # self.OnQuit(None)
         # self.Destroy()

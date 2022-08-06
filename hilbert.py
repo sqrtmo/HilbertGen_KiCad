@@ -1,5 +1,9 @@
+# https://www.programcreek.com/python/example/116915/pcbnew.GetBoard
+
 import wx
 import pcbnew
+from pcbnew import NETINFO_ITEM
+
 
 class hilbert(object):
     """docstring for hilbert"""
@@ -10,6 +14,7 @@ class hilbert(object):
     T_ambient = 25
     size = 100
     voltage = 12
+    netIndex = 0
 
     N = 2**order
     edges = N*N
@@ -24,18 +29,31 @@ class hilbert(object):
         self.board = board
         self.group = pcbnew.PCB_GROUP(self.board)
         self.board.Add(self.group)
-
+        self.netList = self.board.GetNetsByName()
 
     def _draw_segment( self, p_start, p_end ):
-        track = pcbnew.PCB_TRACK(self.board)
+
+        track = pcbnew.PCB_TRACK(self.board) # PCB_TRACK FP_SHAPE
         track.SetStart( pcbnew.wxPointMM( float(p_start[0]), float(p_start[1]) ) )
         track.SetEnd  ( pcbnew.wxPointMM( float(p_end[0])  , float(p_end[1])   ) )
 
         # Size here is specified as integer nanometers, so multiply mm by 1e6
         track.SetWidth(int(self.trace_width * 1e6))
         track.SetLayer(pcbnew.F_Cu)
+
+        # net = NETINFO_ITEM(self.board, "/heater")
+
+        # self.board.AppendNet(net)
+        # track.SetNetCode(net.GetNet())
+        # nets = brd.GetNetsByName()
+        # track.SetNetCode(0x7ff0a9a5c900)
+        # print("fsdfgsgdfg")
+
+        track.SetNet( self.netList.items()[self.netIndex][1] )
         self.board.Add(track)
         self.group.AddItem(track)
+        
+        # msg("Info", str( len(net.items()) ) )
 
 
     def _draw_frame_line( self, p_start, p_end, margin ):
